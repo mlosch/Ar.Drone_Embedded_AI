@@ -1,9 +1,0 @@
-OBJECTS = main.o ATClient.o
-Ardrone: $(OBJECTS)
-	arm-none-eabi-g++ $(OBJECTS) -o Release/main.out
-main.o:
-	arm-none-eabi-g++ -c main.cpp
-ATClient.o: Communication/ATClient.h
-	arm-none-eabi-g++ -lexception -c Communication/ATClient.cpp
-clean:
-	rm *.o Release/main.out
