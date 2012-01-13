@@ -43,9 +43,14 @@ int main(int argc, char **argv) {
 			Trajectory traj = Trajectory();
 			ardrone_control q1,q2,q3;
 			ardrone_control q0 = motionController.getCurrentControl();
-			MotionController::setControlValues(&q1,0.1f,q0.roll,0.0f,q0.yaw,3.0f);
+			/*MotionController::setControlValues(&q1,0.1f,q0.roll,0.0f,q0.yaw,3.0f);
 			MotionController::setControlValues(&q2,-0.1f,q0.roll,0.0f,q0.yaw,3.0f);
-			MotionController::setControlValues(&q3,0.0f,q0.roll,0.0f,q0.yaw,0.1f);
+			MotionController::setControlValues(&q3,0.0f,q0.roll,0.0f,q0.yaw,0.1f);*/
+
+			MotionController::setControlValues(&q1,0.0f,q0.roll,0.0f,1.0f,1.0f);
+			MotionController::setControlValues(&q2,0.0f,q0.roll,0.0f,-1.0f,1.0f);
+			MotionController::setControlValues(&q3,0.0f,q0.roll,0.0f,0.0f,0.1f);
+
 			traj.addControl(&q1);
 			traj.addControl(&q2);
 			traj.addControl(&q3);
@@ -66,4 +71,5 @@ int main(int argc, char **argv) {
 
 	//navReceiver.join();
 }
+
 

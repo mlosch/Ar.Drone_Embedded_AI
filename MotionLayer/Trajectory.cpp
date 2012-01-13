@@ -31,10 +31,11 @@ ardrone_control* Trajectory::getNext() {
 }
 
 void Trajectory::interpolate(ardrone_control* q0, ardrone_control* q1, ardrone_control* target, float tau) {
-	/*float factor = min(1.0f,tau/q1->t);
+	float factor = min(1.0f,tau/q1->t);
 	target->pitch = q0->pitch+(q1->pitch-q0->pitch)*factor;
 	target->roll = q0->roll+(q1->roll-q0->roll)*factor;
 	target->throttle = q0->throttle+(q1->throttle-q0->throttle)*factor;
-	target->yaw = q0->yaw+(q1->yaw-q0->yaw)*factor;*/
-	*target = *q1;
+	target->yaw = q0->yaw+(q1->yaw-q0->yaw)*factor;
+	//*target = *q1;
 }
+

@@ -8,7 +8,7 @@
 #include "ATClient.h"
 #include <sstream>
 
-volatile unsigned int ATClient::at_seq = 1;
+volatile unsigned int ATClient::at_seq = 0;
 
 ATClient::ATClient(string& ip, int port, bool timeout, long useconds)
 	:UDPClient(ip,port,timeout,useconds){
@@ -102,7 +102,7 @@ bool ATClient::sendUnpairCmd() {
 
 unsigned int ATClient::getSeq() {
 	at_seq++;
-	return at_seq-1;
+	return at_seq;
 }
 
 void ATClient::setup() {
@@ -202,3 +202,4 @@ void ATClient::stopSending() {
 bool ATClient::isActive() {
 	return active;
 }
+
