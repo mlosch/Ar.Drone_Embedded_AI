@@ -14,7 +14,7 @@ Trajectory::Trajectory() {
 }
 
 Trajectory::~Trajectory() {
-	cout << "Trajectory : Destruction called" << endl;
+	//cout << "Trajectory : Destruction called" << endl;
 }
 
 
@@ -30,7 +30,13 @@ ardrone_control* Trajectory::getNext() {
 	return &controls[controlIndex++];
 }
 
-void Trajectory::interpolate(ardrone_control* q0, ardrone_control* q1, ardrone_control* target, float tau) {
+/**
+ * @param q0 Initial control (should not change in one trajectory)
+ * @param q1 Target control (should not change in one trajectory)
+ * @param target Result is stored here
+ * @param tau Time. Result is a control at timestamp tau
+ */
+void Trajectory::interpolate(const ardrone_control* q0, const ardrone_control* q1, ardrone_control* target, float tau) {
 	float factor = min(1.0f,tau/q1->t);
 	target->pitch = q0->pitch+(q1->pitch-q0->pitch)*factor;
 	target->roll = q0->roll+(q1->roll-q0->roll)*factor;

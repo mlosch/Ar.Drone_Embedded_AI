@@ -28,7 +28,7 @@ public:
 	bool hasNext();
 	ardrone_control* getNext();
 
-	virtual void interpolate(ardrone_control* q0, ardrone_control* q1, ardrone_control* target, float tau);
+	virtual void interpolate(const ardrone_control* q0, const ardrone_control* q1, ardrone_control* target, float tau);
 protected:
 	vector<ardrone_control> controls;
 	int controlIndex;
