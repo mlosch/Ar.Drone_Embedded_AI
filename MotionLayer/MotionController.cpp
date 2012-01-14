@@ -93,9 +93,7 @@ void MotionController::execute() {
 	stringstream stream;
 
 	while(active) {
-		logger.log("Waiting...");
 		pthread_mutex_lock(&mutex);
-		logger.log("Running...");
 
 		sem_wait(&queueAccessSemaphore);
 		if(motions.size()>0) {
@@ -103,8 +101,6 @@ void MotionController::execute() {
 			Trajectory trajectory = motions.front();
 			motions.pop();
 			sem_post(&queueAccessSemaphore);
-
-			logger.log("################################################\nRunning trajectory\n################################################");
 
 			while(trajectory.hasNext()) {
 				float t = 0.0f;
