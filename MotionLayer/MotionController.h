@@ -44,6 +44,7 @@ private:
 	pthread_mutex_t mutex;
 	sem_t stateWriteSemaphore;
 	sem_t controlWriteSemaphore;
+	sem_t queueAccessSemaphore;
 	NavDataReceiver* navReceiver;
 };
 

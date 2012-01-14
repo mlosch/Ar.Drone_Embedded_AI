@@ -17,6 +17,7 @@ MotionController::MotionController(ATClient* atClient, NavDataReceiver* navRecei
 	pthread_mutex_init(&mutex,0);
 	sem_init(&stateWriteSemaphore,0,1);
 	sem_init(&controlWriteSemaphore,0,1);
+	sem_init(&queueAccessSemaphore,0,1);
 	setControlValues(&lastControl,0.0f,0.0f,0.0f,0.0f,0.0f);
 	navReceiver->addObserver(this);
 }
@@ -30,6 +31,7 @@ MotionController::~MotionController() {
 	pthread_mutex_destroy(&mutex);
 	sem_destroy(&stateWriteSemaphore);
 	sem_destroy(&controlWriteSemaphore);
+	sem_destroy(&queueAccessSemaphore);
 }
 
 navdata MotionController::getCurrentState() {
@@ -71,11 +73,14 @@ void MotionController::newNavData(navdata* navData) {
 }
 
 void MotionController::enqueueMotion(Trajectory& trajectory) {
+	sem_wait(&queueAccessSemaphore);
 	motions.push(trajectory);
+	sem_post(&queueAccessSemaphore);
 	pthread_mutex_unlock(&mutex);
 }
 
 void MotionController::setup() {
+	active = true;
 	if(motions.size()==0)
 		pthread_mutex_lock(&mutex);
 }
@@ -86,13 +91,21 @@ void MotionController::execute() {
 	sleepTime.tv_nsec = (unsigned long)(tau*1E9);
 	timeval workTimeStart, workTimeEnd;
 	stringstream stream;
-	while(active) {
-		pthread_mutex_lock(&mutex);
 
+	while(active) {
+		logger.log("Waiting...");
+		pthread_mutex_lock(&mutex);
+		logger.log("Running...");
+
+		sem_wait(&queueAccessSemaphore);
 		if(motions.size()>0) {
 			cout << "Battery: " << lastState.demo.battery << endl;
 			Trajectory trajectory = motions.front();
 			motions.pop();
+			sem_post(&queueAccessSemaphore);
+
+			logger.log("################################################\nRunning trajectory\n################################################");
+
 			while(trajectory.hasNext()) {
 				float t = 0.0f;
 				ardrone_control* targetControl = trajectory.getNext();
@@ -127,7 +140,13 @@ void MotionController::execute() {
 				logger.log(stream);*/
 			}
 		}
-		pthread_mutex_unlock(&mutex);
+		else {
+			sem_post(&queueAccessSemaphore);
+		}
+		sem_wait(&queueAccessSemaphore);
+		if(motions.size()>0)
+			pthread_mutex_unlock(&mutex);
+		sem_post(&queueAccessSemaphore);
 	}
 }
 
